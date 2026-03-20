@@ -5,12 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>CSV to Keyed JSON Converter</title>
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.1.0/github-markdown.min.css">
 </head>
 <body>
   <h1>📄 CSV → Keyed JSON Converter</h1>
   <p class="info">
     For general usage instructions, troubleshooting, and examples, visit the
-    <a href="README.md" target="_blank" rel="noopener noreferrer" aria-label="Open README for general app usage guidance">README</a>.
+    <a href="#" id="readmeLink" aria-label="Open README for general app usage guidance">README</a>.
   </p>
 
   <!-- Input -->
@@ -80,7 +81,16 @@
     <textarea id="output" placeholder="JSON output will appear here..."></textarea>
   </div>
 
+  <!-- README Modal -->
+  <div id="readmeModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <div id="readmeContent" class="markdown-body"></div>
+    </div>
+  </div>
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.2/marked.min.js"></script>
   <script src="script.js"></script>
 </body>
 </html>

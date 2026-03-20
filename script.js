@@ -11,6 +11,9 @@ class CSVToJSONConverter {
         const fileInput = document.getElementById("fileInput");
         const convertBtn = document.getElementById("convertBtn");
         const downloadBtn = document.getElementById("downloadBtn");
+        const readmeLink = document.getElementById("readmeLink");
+        const modal = document.getElementById("readmeModal");
+        const closeBtn = document.querySelector(".close");
 
         if (fileInput) {
             fileInput.addEventListener("change", (e) => this.handleFileUpload(e));
@@ -21,6 +24,23 @@ class CSVToJSONConverter {
         if (downloadBtn) {
             downloadBtn.addEventListener("click", () => this.download());
         }
+        if (readmeLink) {
+            readmeLink.addEventListener("click", (e) => {
+                e.preventDefault();
+                this.showReadme();
+            });
+        }
+        if (closeBtn) {
+            closeBtn.addEventListener("click", () => {
+                modal.style.display = "none";
+            });
+        }
+        // Close modal when clicking outside
+        window.addEventListener("click", (e) => {
+            if (e.target === modal) {
+                modal.style.display = "none";
+            }
+        });
     }
 
     handleFileUpload(event) {
@@ -183,6 +203,20 @@ class CSVToJSONConverter {
         if (statusElement) {
             statusElement.textContent = message;
         }
+    }
+
+    showReadme() {
+        fetch('README.md')
+            .then(response => response.text())
+            .then(markdown => {
+                const html = marked.parse(markdown);
+                document.getElementById('readmeContent').innerHTML = html;
+                document.getElementById('readmeModal').style.display = 'block';
+            })
+            .catch(error => {
+                console.error('Error loading README:', error);
+                this.showError('Failed to load README');
+            });
     }
 }
 
