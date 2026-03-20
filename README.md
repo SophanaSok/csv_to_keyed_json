@@ -2,6 +2,16 @@
 
 A simple, client-side web application that converts CSV (Comma-Separated Values) files into keyed JSON format. This tool transforms tabular CSV data into a JSON object where each row becomes a nested object keyed by a specified column value.
 
+## Getting Started
+
+To use the application:
+
+1. Download or clone this repository
+2. Open `index.html` in your web browser
+3. The app runs entirely in your browser - no server required
+
+For usage instructions within the app, click the "README" link at the top of the page to view this guide in a modal.
+
 ## Features
 
 - **File Upload**: Support for CSV, TSV, and TXT files
@@ -18,6 +28,7 @@ A simple, client-side web application that converts CSV (Comma-Separated Values)
   - Terse mode output (one object per line)
 - **Download Support**: Export converted JSON as a file
 - **Real-time Preview**: View JSON output in a formatted textarea
+- **In-App Help**: Access this README directly within the application via a modal
 
 ## Usage
 
@@ -64,7 +75,7 @@ With "id" selected as the key field, the output JSON will be:
 ## Requirements
 
 - Modern web browser with JavaScript enabled
-- Internet connection (for PapaParse library loading)
+- Internet connection (for loading external libraries like PapaParse)
 
 ## Browser Support
 
@@ -77,14 +88,19 @@ Works in all modern browsers that support:
 
 ```
 csv_to_keyed_json/
-├── main.html          # Main HTML file with UI
+├── index.html         # Main HTML file with UI
 ├── script.js          # JavaScript logic (ES6 class-based)
+├── styles.css         # CSS styles for the interface
+├── assets/
+│   └── marked.min.js  # Markdown parser for in-app README display
 └── README.md          # This file
 ```
 
 ## Dependencies
 
 - [PapaParse](https://www.papaparse.com/) - CSV parsing library (loaded via CDN)
+- [Marked](https://marked.js.org/) - Markdown parser for displaying README in-app
+- [GitHub Markdown CSS](https://github.com/sindresorhus/github-markdown-css) - Styling for README modal
 
 ## Privacy
 
