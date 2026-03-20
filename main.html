@@ -1,10 +1,9 @@
-<!-- <!DOCTYPE html> -->
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>CSV to Keyed JSON Converter</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: system-ui, sans-serif; background: #f4f6f9; color: #222; padding: 2rem; }
@@ -99,117 +98,7 @@
     <textarea id="output" placeholder="JSON output will appear here..."></textarea>
   </div>
 
-  <script>
-    let parsedData = null;
-    let headers = [];
-    let jsonOutput = "";
-
-    document.getElementById("fileInput").addEventListener("change", function () {
-      const file = this.files[0];
-      if (!file) return;
-      const encoding = document.getElementById("encoding").value;
-      const delimVal = document.getElementById("delimiter").value;
-
-      Papa.parse(file, {
-        encoding,
-        delimiter: delimVal === "auto" ? "" : delimVal,
-        header: document.getElementById("headerRow").checked,
-        skipEmptyLines: true,
-        complete: function (results) {
-          parsedData = results.data;
-          headers = results.meta.fields || Object.keys(parsedData[0] || {});
-          const keySelect = document.getElementById("keyField");
-          keySelect.innerHTML = headers.map((h, i) => `<option value="${i}">${h}</option>`).join("");
-          document.getElementById("status").textContent = `✅ Loaded ${parsedData.length} rows, ${headers.length} columns`;
-        },
-        error: (err) => showError("Parse error: " + err.message)
-      });
-    });
-
-    function castValue(v) {
-      if (!document.getElementById("autoTypes").checked) return v;
-      if (v === "" || v === undefined) return v;
-      if (document.getElementById("nullify").checked && v.toUpperCase() === "NULL") return null;
-      if (v.toLowerCase() === "true") return true;
-      if (v.toLowerCase() === "false") return false;
-      const n = Number(v);
-      if (!isNaN(n) && v.trim() !== "") return n;
-      return v;
-    }
-
-    function applyCase(str) {
-      const c = document.getElementById("caseOption").value;
-      if (c === "lower") return str.toLowerCase();
-      if (c === "upper") return str.toUpperCase();
-      return str;
-    }
-
-    function convert() {
-      hideError();
-      if (!parsedData) { showError("Please upload a CSV file first."); return; }
-
-      const keyIndex = parseInt(document.getElementById("keyField").value);
-      const keyField = headers[keyIndex];
-      const skipEmpty = document.getElementById("skipEmpty").checked;
-      const emptyNull = document.getElementById("emptyNull").checked;
-      const terse = document.getElementById("terseMode").checked;
-      const result = {};
-
-      parsedData.forEach(row => {
-        const keyVal = row[keyField];
-        const obj = {};
-        headers.forEach((h, i) => {
-          if (i === keyIndex) return;
-          let v = row[h];
-          if (v === "" || v === undefined) {
-            if (skipEmpty) return;
-            v = emptyNull ? null : v;
-          } else {
-            v = castValue(v);
-          }
-          obj[applyCase(h)] = v;
-        });
-
-        if (keyVal in result) {
-          if (!Array.isArray(result[keyVal])) result[keyVal] = [result[keyVal]];
-          result[keyVal].push(obj);
-        } else {
-          result[keyVal] = obj;
-        }
-      });
-
-      if (terse) {
-        const lines = Object.entries(result).map(([k, v]) => `  ${JSON.stringify(k)}: ${JSON.stringify(v)}`);
-        jsonOutput = "{
-" + lines.join(",
-") + "
-}";
-      } else {
-        jsonOutput = JSON.stringify(result, null, 2);
-      }
-
-      document.getElementById("output").value = jsonOutput;
-      document.getElementById("downloadBtn").style.display = "inline-block";
-      document.getElementById("status").textContent = `✅ Converted ${parsedData.length} rows → ${Object.keys(result).length} keys`;
-    }
-
-    function download() {
-      if (!jsonOutput) return;
-      const blob = new Blob([jsonOutput], { type: "application/json" });
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = "converted.json";
-      a.click();
-    }
-
-    function showError(msg) {
-      const el = document.getElementById("error");
-      el.textContent = msg;
-      el.style.display = "block";
-    }
-    function hideError() {
-      document.getElementById("error").style.display = "none";
-    }
-  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>

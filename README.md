@@ -73,6 +73,15 @@ Works in all modern browsers that support:
 - ES6+ JavaScript features
 - CSS Grid and Flexbox
 
+## Project Structure
+
+```
+csv_to_keyed_json/
+├── main.html          # Main HTML file with UI
+├── script.js          # JavaScript logic (ES6 class-based)
+└── README.md          # This file
+```
+
 ## Dependencies
 
 - [PapaParse](https://www.papaparse.com/) - CSV parsing library (loaded via CDN)
