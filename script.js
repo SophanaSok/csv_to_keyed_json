@@ -206,17 +206,10 @@ class CSVToJSONConverter {
     }
 
     showReadme() {
-        fetch('README.md')
-            .then(response => response.text())
-            .then(markdown => {
-                const html = marked.parse(markdown);
-                document.getElementById('readmeContent').innerHTML = html;
-                document.getElementById('readmeModal').style.display = 'block';
-            })
-            .catch(error => {
-                console.error('Error loading README:', error);
-                this.showError('Failed to load README');
-            });
+        const markdown = document.getElementById('readme-content').textContent;
+        const html = marked.parse(markdown);
+        document.getElementById('readmeContent').innerHTML = html;
+        document.getElementById('readmeModal').style.display = 'block';
     }
 }
 
