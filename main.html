@@ -4,29 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>CSV to Keyed JSON Converter</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: system-ui, sans-serif; background: #f4f6f9; color: #222; padding: 2rem; }
-    h1 { font-size: 1.4rem; margin-bottom: 1.5rem; color: #1a1a2e; }
-    .card { background: white; border-radius: 10px; padding: 1.5rem; margin-bottom: 1.5rem; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
-    h2 { font-size: 1rem; font-weight: 600; margin-bottom: 1rem; color: #333; }
-    label { display: block; margin-bottom: 0.4rem; font-size: 0.85rem; color: #555; }
-    input[type="file"], select { width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 6px; font-size: 0.9rem; background: #fafafa; }
-    .row { display: flex; gap: 1rem; flex-wrap: wrap; }
-    .col { flex: 1; min-width: 180px; }
-    .options-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 0.5rem 1.5rem; margin-top: 0.5rem; }
-    .check-label { display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; cursor: pointer; }
-    .check-label input { width: auto; }
-    button { padding: 0.6rem 1.4rem; border: none; border-radius: 6px; font-size: 0.9rem; cursor: pointer; font-weight: 600; }
-    #convertBtn { background: #4f46e5; color: white; }
-    #convertBtn:hover { background: #4338ca; }
-    #downloadBtn { background: #16a34a; color: white; display: none; }
-    #downloadBtn:hover { background: #15803d; }
-    .btn-row { display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; }
-    #output { width: 100%; min-height: 260px; font-family: monospace; font-size: 0.82rem; border: 1px solid #ddd; border-radius: 6px; padding: 0.8rem; background: #1e1e2e; color: #cdd6f4; resize: vertical; }
-    #status { font-size: 0.85rem; color: #888; }
-    #error { font-size: 0.85rem; color: #dc2626; margin-top: 0.5rem; display: none; }
-  </style>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <h1>📄 CSV → Keyed JSON Converter</h1>
