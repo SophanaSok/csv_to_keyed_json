@@ -1,0 +1,215 @@
+<!-- <!DOCTYPE html> -->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CSV to Keyed JSON Converter</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, sans-serif; background: #f4f6f9; color: #222; padding: 2rem; }
+    h1 { font-size: 1.4rem; margin-bottom: 1.5rem; color: #1a1a2e; }
+    .card { background: white; border-radius: 10px; padding: 1.5rem; margin-bottom: 1.5rem; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+    h2 { font-size: 1rem; font-weight: 600; margin-bottom: 1rem; color: #333; }
+    label { display: block; margin-bottom: 0.4rem; font-size: 0.85rem; color: #555; }
+    input[type="file"], select { width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 6px; font-size: 0.9rem; background: #fafafa; }
+    .row { display: flex; gap: 1rem; flex-wrap: wrap; }
+    .col { flex: 1; min-width: 180px; }
+    .options-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 0.5rem 1.5rem; margin-top: 0.5rem; }
+    .check-label { display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; cursor: pointer; }
+    .check-label input { width: auto; }
+    button { padding: 0.6rem 1.4rem; border: none; border-radius: 6px; font-size: 0.9rem; cursor: pointer; font-weight: 600; }
+    #convertBtn { background: #4f46e5; color: white; }
+    #convertBtn:hover { background: #4338ca; }
+    #downloadBtn { background: #16a34a; color: white; display: none; }
+    #downloadBtn:hover { background: #15803d; }
+    .btn-row { display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; }
+    #output { width: 100%; min-height: 260px; font-family: monospace; font-size: 0.82rem; border: 1px solid #ddd; border-radius: 6px; padding: 0.8rem; background: #1e1e2e; color: #cdd6f4; resize: vertical; }
+    #status { font-size: 0.85rem; color: #888; }
+    #error { font-size: 0.85rem; color: #dc2626; margin-top: 0.5rem; display: none; }
+  </style>
+</head>
+<body>
+  <h1>📄 CSV → Keyed JSON Converter</h1>
+
+  <!-- Input -->
+  <div class="card">
+    <h2>1. Load CSV</h2>
+    <div class="row">
+      <div class="col">
+        <label>Upload CSV File</label>
+        <input type="file" id="fileInput" accept=".csv,.tsv,.txt" />
+      </div>
+      <div class="col">
+        <label>Field Separator</label>
+        <select id="delimiter">
+          <option value="auto">Auto-detect</option>
+          <option value=",">Comma (,)</option>
+          <option value="	">Tab</option>
+          <option value=";">Semicolon (;)</option>
+          <option value="|">Pipe (|)</option>
+        </select>
+      </div>
+      <div class="col">
+        <label>Encoding</label>
+        <select id="encoding">
+          <option value="UTF-8">UTF-8</option>
+          <option value="ISO-8859-1">ISO-8859-1</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Options -->
+  <div class="card">
+    <h2>2. Conversion Options</h2>
+    <div class="row" style="margin-bottom:1rem;">
+      <div class="col">
+        <label>Key Field (column used as JSON key)</label>
+        <select id="keyField"><option value="0">-- upload a file first --</option></select>
+      </div>
+      <div class="col">
+        <label>Attribute Name Case</label>
+        <select id="caseOption">
+          <option value="none">As-is</option>
+          <option value="lower">Lowercase</option>
+          <option value="upper">Uppercase</option>
+        </select>
+      </div>
+    </div>
+    <div class="options-grid">
+      <label class="check-label"><input type="checkbox" id="autoTypes" checked /> Auto-detect numbers & booleans</label>
+      <label class="check-label"><input type="checkbox" id="nullify" checked /> Convert "NULL" → null</label>
+      <label class="check-label"><input type="checkbox" id="emptyNull" /> Empty fields → null</label>
+      <label class="check-label"><input type="checkbox" id="skipEmpty" /> Skip empty fields entirely</label>
+      <label class="check-label"><input type="checkbox" id="headerRow" checked /> First row is column names</label>
+      <label class="check-label"><input type="checkbox" id="terseMode" /> Terse mode (one object per line)</label>
+    </div>
+  </div>
+
+  <!-- Convert & Output -->
+  <div class="card">
+    <h2>3. Convert & Download</h2>
+    <div class="btn-row" style="margin-bottom:1rem;">
+      <button id="convertBtn" onclick="convert()">⚡ Convert</button>
+      <button id="downloadBtn" onclick="download()">⬇ Download JSON</button>
+      <span id="status"></span>
+    </div>
+    <div id="error"></div>
+    <textarea id="output" placeholder="JSON output will appear here..."></textarea>
+  </div>
+
+  <script>
+    let parsedData = null;
+    let headers = [];
+    let jsonOutput = "";
+
+    document.getElementById("fileInput").addEventListener("change", function () {
+      const file = this.files[0];
+      if (!file) return;
+      const encoding = document.getElementById("encoding").value;
+      const delimVal = document.getElementById("delimiter").value;
+
+      Papa.parse(file, {
+        encoding,
+        delimiter: delimVal === "auto" ? "" : delimVal,
+        header: document.getElementById("headerRow").checked,
+        skipEmptyLines: true,
+        complete: function (results) {
+          parsedData = results.data;
+          headers = results.meta.fields || Object.keys(parsedData[0] || {});
+          const keySelect = document.getElementById("keyField");
+          keySelect.innerHTML = headers.map((h, i) => `<option value="${i}">${h}</option>`).join("");
+          document.getElementById("status").textContent = `✅ Loaded ${parsedData.length} rows, ${headers.length} columns`;
+        },
+        error: (err) => showError("Parse error: " + err.message)
+      });
+    });
+
+    function castValue(v) {
+      if (!document.getElementById("autoTypes").checked) return v;
+      if (v === "" || v === undefined) return v;
+      if (document.getElementById("nullify").checked && v.toUpperCase() === "NULL") return null;
+      if (v.toLowerCase() === "true") return true;
+      if (v.toLowerCase() === "false") return false;
+      const n = Number(v);
+      if (!isNaN(n) && v.trim() !== "") return n;
+      return v;
+    }
+
+    function applyCase(str) {
+      const c = document.getElementById("caseOption").value;
+      if (c === "lower") return str.toLowerCase();
+      if (c === "upper") return str.toUpperCase();
+      return str;
+    }
+
+    function convert() {
+      hideError();
+      if (!parsedData) { showError("Please upload a CSV file first."); return; }
+
+      const keyIndex = parseInt(document.getElementById("keyField").value);
+      const keyField = headers[keyIndex];
+      const skipEmpty = document.getElementById("skipEmpty").checked;
+      const emptyNull = document.getElementById("emptyNull").checked;
+      const terse = document.getElementById("terseMode").checked;
+      const result = {};
+
+      parsedData.forEach(row => {
+        const keyVal = row[keyField];
+        const obj = {};
+        headers.forEach((h, i) => {
+          if (i === keyIndex) return;
+          let v = row[h];
+          if (v === "" || v === undefined) {
+            if (skipEmpty) return;
+            v = emptyNull ? null : v;
+          } else {
+            v = castValue(v);
+          }
+          obj[applyCase(h)] = v;
+        });
+
+        if (keyVal in result) {
+          if (!Array.isArray(result[keyVal])) result[keyVal] = [result[keyVal]];
+          result[keyVal].push(obj);
+        } else {
+          result[keyVal] = obj;
+        }
+      });
+
+      if (terse) {
+        const lines = Object.entries(result).map(([k, v]) => `  ${JSON.stringify(k)}: ${JSON.stringify(v)}`);
+        jsonOutput = "{
+" + lines.join(",
+") + "
+}";
+      } else {
+        jsonOutput = JSON.stringify(result, null, 2);
+      }
+
+      document.getElementById("output").value = jsonOutput;
+      document.getElementById("downloadBtn").style.display = "inline-block";
+      document.getElementById("status").textContent = `✅ Converted ${parsedData.length} rows → ${Object.keys(result).length} keys`;
+    }
+
+    function download() {
+      if (!jsonOutput) return;
+      const blob = new Blob([jsonOutput], { type: "application/json" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "converted.json";
+      a.click();
+    }
+
+    function showError(msg) {
+      const el = document.getElementById("error");
+      el.textContent = msg;
+      el.style.display = "block";
+    }
+    function hideError() {
+      document.getElementById("error").style.display = "none";
+    }
+  </script>
+</body>
+</html>
