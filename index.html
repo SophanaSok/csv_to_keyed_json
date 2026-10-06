@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>CSV to Keyed JSON Converter</title>
   <link rel="stylesheet" href="styles.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.1.0/github-markdown.min.css">
+  <link rel="stylesheet" href="assets/github-markdown.min.css">
 </head>
 <body>
   <h1>📄 CSV → Keyed JSON Converter</h1>
@@ -149,7 +149,7 @@ With "id" selected as the key field, the output JSON will be:
 ## Requirements
 
 - Modern web browser with JavaScript enabled
-- Internet connection (for PapaParse library loading)
+- No internet connection needed: all libraries are in `assets/`
 
 ## Browser Support
 
@@ -169,7 +169,7 @@ csv_to_keyed_json/
 
 ## Dependencies
 
-- [PapaParse](https://www.papaparse.com/) - CSV parsing library (loaded via CDN)
+- [PapaParse](https://www.papaparse.com/) - CSV parsing library (bundled in `assets/`)
 
 ## Privacy
 
@@ -188,7 +188,7 @@ This project is open source. Feel free to use, modify, and distribute.
     </div>
   </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+  <script src="assets/papaparse.min.js"></script>
   <script src="assets/marked.min.js"></script>
   <script src="script.js"></script>
 </body>
