@@ -122,6 +122,11 @@ button {
   align-items: center;
 }
 
+/* Was an inline style attribute; kept here so the CSP needs no 'unsafe-inline' */
+.gap-below {
+  margin-bottom: 1rem;
+}
+
 /* Output area */
 #output {
   width: 100%;

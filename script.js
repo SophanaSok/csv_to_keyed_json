@@ -71,9 +71,13 @@ class CSVToJSONConverter {
         const keySelect = document.getElementById("keyField");
         if (!keySelect) return;
 
-        keySelect.innerHTML = this.headers.map((header, index) =>
-            `<option value="${index}">${header}</option>`
-        ).join("");
+        // Column names come from the uploaded file, so they are set as text,
+        // never parsed as HTML.
+        const options = document.createDocumentFragment();
+        this.headers.forEach((header, index) => {
+            options.appendChild(new Option(header, String(index)));
+        });
+        keySelect.replaceChildren(options);
     }
 
     castValue(value) {
@@ -208,6 +212,7 @@ class CSVToJSONConverter {
     showReadme() {
         const markdown = document.getElementById('readme-content').textContent;
         const html = marked.parse(markdown);
+        // Safe only because the markdown is this page's own static text, never user input.
         document.getElementById('readmeContent').innerHTML = html;
         document.getElementById('readmeModal').style.display = 'block';
     }

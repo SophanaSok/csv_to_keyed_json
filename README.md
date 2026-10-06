@@ -75,7 +75,7 @@ With "id" selected as the key field, the output JSON will be:
 ## Requirements
 
 - Modern web browser with JavaScript enabled
-- Internet connection (for loading external libraries like PapaParse)
+- No internet connection needed: all libraries are in `assets/`
 
 ## Browser Support
 
@@ -92,15 +92,31 @@ csv_to_keyed_json/
 ├── script.js          # JavaScript logic (ES6 class-based)
 ├── styles.css         # CSS styles for the interface
 ├── assets/
-│   └── marked.min.js  # Markdown parser for in-app README display
+│   ├── papaparse.min.js         # CSV parser (PapaParse 5.4.1)
+│   ├── marked.min.js            # Markdown parser for in-app README display (marked 9.1.2)
+│   ├── github-markdown.min.css  # Styling for the README modal (github-markdown-css 5.1.0)
+│   └── *.LICENSE                # Licences of the bundled libraries
 └── README.md          # This file
 ```
 
 ## Dependencies
 
-- [PapaParse](https://www.papaparse.com/) - CSV parsing library (loaded via CDN)
+- [PapaParse](https://www.papaparse.com/) - CSV parsing library
 - [Marked](https://marked.js.org/) - Markdown parser for displaying README in-app
 - [GitHub Markdown CSS](https://github.com/sindresorhus/github-markdown-css) - Styling for README modal
+
+All three are copied byte for byte from cdnjs into `assets/` and served from this
+site, so the page loads nothing from another origin and its Content-Security-Policy
+can stay `'self'`. To check a copy, or after replacing it with a new version, compare
+its hash with the `sri` value cdnjs publishes (cdnjs uses SHA-512):
+
+```sh
+openssl dgst -sha512 -binary assets/papaparse.min.js | base64 -w0; echo
+curl -s 'https://api.cdnjs.com/libraries/PapaParse/5.4.1?fields=sri' | jq -r '.sri["papaparse.min.js"]'
+```
+
+Same for `marked/9.1.2` (`marked.min.js`) and `github-markdown-css/5.1.0`
+(`github-markdown.min.css`). The two lines must print the same value.
 
 ## Privacy
 
