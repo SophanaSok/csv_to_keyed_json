@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta http-equiv="content-security-policy" content="default-src 'self';img-src 'self';connect-src 'none';object-src 'none';base-uri 'none';form-action 'none'; script-src 'self'; style-src 'self';">
   <title>CSV to Keyed JSON Converter</title>
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="assets/github-markdown.min.css">
@@ -45,7 +46,7 @@
   <!-- Options -->
   <div class="card">
     <h2>2. Conversion Options</h2>
-    <div class="row" style="margin-bottom:1rem;">
+    <div class="row gap-below">
       <div class="col">
         <label>Key Field (column used as JSON key)</label>
         <select id="keyField"><option value="0">-- upload a file first --</option></select>
@@ -72,9 +73,9 @@
   <!-- Convert & Output -->
   <div class="card">
     <h2>3. Convert & Download</h2>
-    <div class="btn-row" style="margin-bottom:1rem;">
-      <button id="convertBtn" onclick="convert()">⚡ Convert</button>
-      <button id="downloadBtn" onclick="download()">⬇ Download JSON</button>
+    <div class="btn-row gap-below">
+      <button id="convertBtn">⚡ Convert</button>
+      <button id="downloadBtn">⬇ Download JSON</button>
       <span id="status"></span>
     </div>
     <div id="error"></div>
